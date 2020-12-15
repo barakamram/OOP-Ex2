@@ -234,13 +234,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 JsonElement jsonNode = nodes.get(i);
                 int key = jsonNode.getAsJsonObject().get("id").getAsInt();
                 node_data n = new NodeData(key);
-//                double weight = jsonNode.getAsJsonObject().get("weight").getAsDouble();
-//                n.setWeight(weight);
-//                String info = jsonNode.getAsJsonObject().get("info").getAsString();
-//                n.setInfo(info);
-//                int tag = jsonNode.getAsJsonObject().get("tag").getAsInt();
-//                n.setTag(tag);
-
                 String pos = jsonNode.getAsJsonObject().get("pos").getAsString();
                 String[] ps = pos.split(",");
                 double x = Double.parseDouble(ps[0]);
