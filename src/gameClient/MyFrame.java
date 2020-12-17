@@ -7,7 +7,6 @@ import api.node_data;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
-import gameClient.util.Range2Range;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +23,8 @@ import java.util.List;
 public class MyFrame extends JFrame{
 	private int _ind;
 	private Arena _ar;
-	private Range2Range _w2f;
+	private gameClient.util.Range2Range _w2f;
+
 	MyFrame(String a) {
 		super(a);
 		int _ind = 0;
@@ -80,21 +80,21 @@ public class MyFrame extends JFrame{
 		if(fs!=null) {
 		Iterator<CL_Pokemon> itr = fs.iterator();
 		
-		while(itr.hasNext()) {
-			
-			CL_Pokemon f = itr.next();
-			Point3D c = f.getLocation();
-			int r=10;
-			g.setColor(Color.green);
-			if(f.getType()<0) {g.setColor(Color.orange);}
-			if(c!=null) {
+			while(itr.hasNext()) {
 
-				geo_location fp = this._w2f.world2frame(c);
-				g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
-			//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
-				
+				CL_Pokemon f = itr.next();
+				Point3D c = f.getLocation();
+				int r=10;
+				g.setColor(Color.green);
+				if(f.getType()<0) {g.setColor(Color.orange);}
+				if(c!=null) {
+
+					geo_location fp = this._w2f.world2frame(c);
+					g.fillOval((int)fp.x()-r, (int)fp.y()-r, 2*r, 2*r);
+				//	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
+
+				}
 			}
-		}
 		}
 	}
 	private void drawAgants(Graphics g) {

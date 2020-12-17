@@ -29,6 +29,7 @@ public class Arena {
 	private List<String> _info;
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
+	private long _time;
 
 	public Arena() {;
 		_info = new ArrayList<String>();
@@ -38,6 +39,7 @@ public class Arena {
 		this.setAgents(r);
 		this.setPokemons(p);
 	}
+
 	public void setPokemons(List<CL_Pokemon> f) {
 		this._pokemons = f;
 	}
@@ -45,6 +47,13 @@ public class Arena {
 		this._agents = f;
 	}
 	public void setGraph(directed_weighted_graph g) {this._gg =g;}//init();}
+	public void setTime(long t){
+		this._time=t;
+	}
+	public long getTime(){
+		return this._time;
+	}
+
 	private void init( ) {
 		MIN=null; MAX=null;
 		double x0=0,x1=0,y0=0,y1=0;
@@ -94,7 +103,7 @@ public class Arena {
 		return ans;
 	}
 	public static ArrayList<CL_Pokemon> json2Pokemons(String fs) {
-		ArrayList <CL_Pokemon> ans = new  ArrayList<CL_Pokemon>();
+		ArrayList<CL_Pokemon> ans = new  ArrayList<CL_Pokemon>();
 		try {
 			JSONObject ttt = new JSONObject(fs);
 			JSONArray ags = ttt.getJSONArray("Pokemons");

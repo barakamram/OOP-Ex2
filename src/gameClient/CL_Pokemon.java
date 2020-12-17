@@ -34,7 +34,7 @@ public class CL_Pokemon {
 	}
 	public String toString() {return "F:{v="+_value+", t="+_type+"}";}
 	public edge_data get_edge() {
-		return _edge;
+		return this._edge;
 	}
 
 	public void set_edge(edge_data _edge) {
