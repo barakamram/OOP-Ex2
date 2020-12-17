@@ -105,6 +105,7 @@ public class DWGraph_DS implements  directed_weighted_graph {
      */
     @Override
     public Collection<edge_data> getE(int node_id) {
+        if (!myDWGraph.containsKey(node_id)) return null;
         return myEdges.get(node_id).values();
     }
 
