@@ -16,6 +16,7 @@ public class CL_Pokemon {
 	//	_speed = s;
 		_value = v;
 		set_edge(e);
+//		_edge = e;
 		_pos = p;
 		min_dist = -1;
 		min_ro = -1;

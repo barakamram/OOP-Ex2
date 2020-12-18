@@ -11,6 +11,12 @@ public class NodeData implements node_data {
     public NodeData(int k){
         this.key_id=k;
     }
+
+    public NodeData(int id, GeoLocation geo) {
+        this.key_id=id;
+        this.geo=geo;
+    }
+
     /**
      * Returns the key (id) associated with this node.
      * @return

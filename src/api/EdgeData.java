@@ -1,7 +1,8 @@
 package api;
 
 public class EdgeData implements edge_data {
-    private int src,dest;
+    private int src;
+    private int dest;
     private int tag;
     private String info;
     private double weight;
@@ -12,6 +13,7 @@ public class EdgeData implements edge_data {
         this.dest = d;
         this.weight = w;
     }
+
     /**
      * The id of the source node of this edge.
      * @return

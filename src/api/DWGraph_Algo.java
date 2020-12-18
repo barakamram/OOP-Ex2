@@ -190,7 +190,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             return false;
         }
     }
-
+    /**
+     * This method helps to the other functions in this graph algorithm.
+     * NOTE: the method updates the Hashmap "prevNode" for the function
+     * shortestPath and the Hashmap "pathSize" for the shortestPathDist
+     * @param g - our graph
+     * @param src - start node
+     * @return
+     */
     public void dijkstra(directed_weighted_graph g, int src) {
         LinkedList<Integer> queue = new LinkedList();
         node_data[] nodes = g.getV().toArray(new node_data[g.nodeSize()]);
@@ -225,7 +232,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     }
 
     private class DWGraphJsonDeserializer implements JsonDeserializer<directed_weighted_graph> {
-
+        /**
+         * This method get JsonElements and init it to the graph with the values the method get.
+         * the method returns the graph with the values of the nodes and edges.
+         * @param jsonElement
+         * @param type
+         * @param jsonDeserializationContext
+         * @return graph
+         */
+        @Override
         public directed_weighted_graph deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             directed_weighted_graph graph=new DWGraph_DS();

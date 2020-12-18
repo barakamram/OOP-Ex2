@@ -1,9 +1,7 @@
 package gameClient;
 
-import api.directed_weighted_graph;
-import api.edge_data;
-import api.geo_location;
-import api.node_data;
+import api.*;
+import com.google.gson.*;
 import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
@@ -12,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,6 @@ public class Arena {
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
 	private long _time;
-
 	public Arena() {;
 		_info = new ArrayList<String>();
 	}
@@ -39,7 +37,6 @@ public class Arena {
 		this.setAgents(r);
 		this.setPokemons(p);
 	}
-
 	public void setPokemons(List<CL_Pokemon> f) {
 		this._pokemons = f;
 	}
@@ -47,13 +44,6 @@ public class Arena {
 		this._agents = f;
 	}
 	public void setGraph(directed_weighted_graph g) {this._gg =g;}//init();}
-	public void setTime(long t){
-		this._time=t;
-	}
-	public long getTime(){
-		return this._time;
-	}
-
 	private void init( ) {
 		MIN=null; MAX=null;
 		double x0=0,x1=0,y0=0,y1=0;
@@ -69,12 +59,17 @@ public class Arena {
 		double dx = x1-x0, dy = y1-y0;
 		MIN = new Point3D(x0-dx/10,y0-dy/10);
 		MAX = new Point3D(x1+dx/10,y1+dy/10);
-		
+
 	}
 	public List<CL_Agent> getAgents() {return _agents;}
 	public List<CL_Pokemon> getPokemons() {return _pokemons;}
+	public void setTime(long t){
+		this._time=t;
+	}
+	public long getTime(){
+		return this._time;
+	}
 
-	
 	public directed_weighted_graph getGraph() {
 		return _gg;
 	}
@@ -123,14 +118,12 @@ public class Arena {
 	}
 	public static void updateEdge(CL_Pokemon fr, directed_weighted_graph g) {
 		//	oop_edge_data ans = null;
-		Iterator<node_data> itr = g.getV().iterator();
-		while(itr.hasNext()) {
-			node_data v = itr.next();
-			Iterator<edge_data> iter = g.getE(v.getKey()).iterator();
-			while(iter.hasNext()) {
-				edge_data e = iter.next();
-				boolean f = isOnEdge(fr.getLocation(), e,fr.getType(), g);
-				if(f) {fr.set_edge(e);}
+		for (node_data v : g.getV()) {
+			for (edge_data e : g.getE(v.getKey())) {
+				boolean f = isOnEdge(fr.getLocation(), e, fr.getType(), g);
+				if (f) {
+					fr.set_edge(e);
+				}
 			}
 		}
 	}
@@ -183,5 +176,85 @@ public class Arena {
 		Range2Range ans = new Range2Range(world, frame);
 		return ans;
 	}
+
+
+
+	static directed_weighted_graph JsonToGraph(String s) {
+		GsonBuilder gb = new GsonBuilder();
+		gb.registerTypeAdapter(directed_weighted_graph.class, new graphJsonDeserializer());
+		Gson gson = gb.create();
+		return gson.fromJson(s, directed_weighted_graph.class);
+	}
+
+	private static class graphJsonDeserializer implements JsonDeserializer<directed_weighted_graph> {
+		@Override
+		public  directed_weighted_graph deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			JsonArray nodes=jsonObject.get("Nodes").getAsJsonArray();
+			node_data node;
+			directed_weighted_graph graph=new DWGraph_DS();
+			for(JsonElement curr: nodes){
+				node=new NodeData(curr.getAsJsonObject().get("id").getAsInt(),posHelp(curr.getAsJsonObject().get("pos").getAsString()));
+				graph.addNode(node);
+			}
+			JsonArray edges=jsonObject.get("Edges").getAsJsonArray();
+			for(JsonElement curr :edges){
+				int src=curr.getAsJsonObject().get("src").getAsInt();
+				int dest=curr.getAsJsonObject().get("dest").getAsInt();
+				double w=curr.getAsJsonObject().get("w").getAsDouble();
+				graph.connect(src,dest,w);
+			}
+			return graph;
+		}
+	}
+
+	private static GeoLocation posHelp(String str){
+		String[] a = str.split(",");
+		GeoLocation curr =new GeoLocation(Double.parseDouble(a[0]),Double.parseDouble(a[1]),Double.parseDouble(a[2]));
+		return curr;
+	}
+//
+//	public List<Integer> getInfo() {
+//		return info;
+//	}
+//
+//	public void setInfo(String s) {
+//		this.info = new ArrayList<>();
+//		try {
+//			JSONObject game = new JSONObject(s);
+//			JSONObject Info=game.getJSONObject("GameServer");
+//			int pokemons=Info.getInt("pokemons");
+//			int moves=Info.getInt("moves");
+//			int grade=Info.getInt("grade");
+//			int game_level=Info.getInt("game_level");
+//			int agents=Info.getInt("agents");
+//			info.add(0,pokemons);
+//			info.add(1,moves);
+//			info.add(2,grade);
+//			info.add(3,game_level);
+//			info.add(4,agents);
+//			info.add(5,0);
+//
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
+//
+//	public void updateInfo(String s, int t)  {
+//		try {
+//			JSONObject game = new JSONObject(s);
+//			JSONObject Info = game.getJSONObject("GameServer");
+//			int moves = Info.getInt("moves");
+//			int grade = Info.getInt("grade");
+//			info.add(3, moves);
+//			info.add(4, grade);
+//			info.add(5, t); //time left
+//
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
 
 }

@@ -109,7 +109,6 @@ public class Ex2_Client implements Runnable{
 		_win.setSize(1000, 700);
 		_win.panel.update(_ar);
 
-	
 		_win.show();
 		String info = game.toString();
 		JSONObject line;

@@ -80,9 +80,6 @@ public class DWGraph_DS implements  directed_weighted_graph {
             myEdges.get(src).replace(dest, e);
             MC++;
         }
-
-
-
     }
 
     /**
@@ -178,5 +175,28 @@ public class DWGraph_DS implements  directed_weighted_graph {
     public int getMC() {
         return MC;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
+        boolean flag = false;
+        DWGraph_DS graph = (DWGraph_DS) o;
+        boolean NON = numOfNodes == graph.numOfNodes;
+        boolean NOE = numOfEdges == graph.numOfEdges;
+        if ( NON && NOE ) {
+            flag = true;
+            for (int src : myDWGraph.keySet()) {
+                for (int dest : myEdges.get(src).keySet()) {
+                    boolean s = graph.getEdge(src,dest).getSrc() == src;
+                    boolean d = graph.getEdge(src,dest).getDest() == dest;
+                    if (!s || !d)  flag = false;
+                }
+            }
+        }
+        return flag;
+
+    }
+
 }
 
