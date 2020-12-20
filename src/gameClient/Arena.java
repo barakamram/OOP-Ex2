@@ -29,8 +29,12 @@ public class Arena {
 	private static Point3D MIN = new Point3D(0, 100,0);
 	private static Point3D MAX = new Point3D(0, 100,0);
 	private long _time;
+	private List<Integer> info;
+	private int numberOfAgents;
+
 	public Arena() {;
 		_info = new ArrayList<String>();
+		info = new ArrayList<>();
 	}
 	private Arena(directed_weighted_graph g, List<CL_Agent> r, List<CL_Pokemon> p) {
 		_gg = g;
@@ -47,14 +51,27 @@ public class Arena {
 	private void init( ) {
 		MIN=null; MAX=null;
 		double x0=0,x1=0,y0=0,y1=0;
-		Iterator<node_data> iter = _gg.getV().iterator();
-		while(iter.hasNext()) {
-			geo_location c = iter.next().getLocation();
-			if(MIN==null) {x0 = c.x(); y0=c.y(); x1=x0;y1=y0;MIN = new Point3D(x0,y0);}
-			if(c.x() < x0) {x0=c.x();}
-			if(c.y() < y0) {y0=c.y();}
-			if(c.x() > x1) {x1=c.x();}
-			if(c.y() > y1) {y1=c.y();}
+		for (api.node_data node_data : _gg.getV()) {
+			geo_location c = node_data.getLocation();
+			if (MIN == null) {
+				x0 = c.x();
+				y0 = c.y();
+				x1 = x0;
+				y1 = y0;
+				MIN = new Point3D(x0, y0);
+			}
+			if (c.x() < x0) {
+				x0 = c.x();
+			}
+			if (c.y() < y0) {
+				y0 = c.y();
+			}
+			if (c.x() > x1) {
+				x1 = c.x();
+			}
+			if (c.y() > y1) {
+				y1 = c.y();
+			}
 		}
 		double dx = x1-x0, dy = y1-y0;
 		MIN = new Point3D(x0-dx/10,y0-dy/10);
@@ -79,6 +96,42 @@ public class Arena {
 	public void set_info(List<String> _info) {
 		this._info = _info;
 	}
+//
+//	public List<String> getInfo() {
+//	}
+
+	public List<Integer> getInfo(){
+		return this.info;
+	}
+	public void setInfo(String s)  {
+		try {
+			JSONObject game = new JSONObject(s);
+			JSONObject Info = game.getJSONObject("GameServer");
+			int moves = Info.getInt("moves");
+			int grade = Info.getInt("grade");
+			info.add(0,moves);
+			info.add(1,grade);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	public void update_info(String s)  {
+		try {
+			JSONObject game = new JSONObject(s);
+			JSONObject Info = game.getJSONObject("GameServer");
+			int moves = Info.getInt("moves");
+			int grade = Info.getInt("grade");
+			info.add(0,moves);
+			info.add(1,grade);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 
 	////////////////////////////////////////////////////
 	public static List<CL_Agent> getAgents(String aa, directed_weighted_graph gg) {
@@ -177,8 +230,6 @@ public class Arena {
 		return ans;
 	}
 
-
-
 	static directed_weighted_graph JsonToGraph(String s) {
 		GsonBuilder gb = new GsonBuilder();
 		gb.registerTypeAdapter(directed_weighted_graph.class, new graphJsonDeserializer());
@@ -213,48 +264,7 @@ public class Arena {
 		GeoLocation curr =new GeoLocation(Double.parseDouble(a[0]),Double.parseDouble(a[1]),Double.parseDouble(a[2]));
 		return curr;
 	}
-//
-//	public List<Integer> getInfo() {
-//		return info;
-//	}
-//
-//	public void setInfo(String s) {
-//		this.info = new ArrayList<>();
-//		try {
-//			JSONObject game = new JSONObject(s);
-//			JSONObject Info=game.getJSONObject("GameServer");
-//			int pokemons=Info.getInt("pokemons");
-//			int moves=Info.getInt("moves");
-//			int grade=Info.getInt("grade");
-//			int game_level=Info.getInt("game_level");
-//			int agents=Info.getInt("agents");
-//			info.add(0,pokemons);
-//			info.add(1,moves);
-//			info.add(2,grade);
-//			info.add(3,game_level);
-//			info.add(4,agents);
-//			info.add(5,0);
-//
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-//
-//	public void updateInfo(String s, int t)  {
-//		try {
-//			JSONObject game = new JSONObject(s);
-//			JSONObject Info = game.getJSONObject("GameServer");
-//			int moves = Info.getInt("moves");
-//			int grade = Info.getInt("grade");
-//			info.add(3, moves);
-//			info.add(4, grade);
-//			info.add(5, t); //time left
-//
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
+
+
 
 }

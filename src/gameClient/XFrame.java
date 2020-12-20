@@ -5,6 +5,7 @@ import java.awt.*;
 
 public class XFrame extends JFrame {
     XPanel panel;
+    private Arena _ar;
 
     public XFrame(String a){
         super(a);
@@ -12,7 +13,7 @@ public class XFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setBackground(Color.WHITE);
 
-        panel =new XPanel();
+        panel =new XPanel(_ar);
         this.add(panel);
         this.setVisible(true);
     }

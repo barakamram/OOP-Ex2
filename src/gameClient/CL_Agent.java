@@ -7,6 +7,8 @@ import api.node_data;
 import gameClient.util.Point3D;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class CL_Agent {
 		public static final double EPS = 0.0001;
 		private static int _count = 0;
@@ -20,10 +22,10 @@ public class CL_Agent {
 		private directed_weighted_graph _gg;
 		private CL_Pokemon _curr_fruit;
 		private long _sg_dt;
-		
 		private double _value;
-		
-		
+		private int dest;
+		private Iterator <node_data> _ite;
+
 		public CL_Agent(directed_weighted_graph g, int start_node) {
 			_gg = g;
 			setMoney(0);
@@ -52,6 +54,8 @@ public class CL_Agent {
 					this.setSpeed(speed);
 					this.setNextNode(dest);
 					this.setMoney(value);
+					this._curr_edge = _gg.getEdge(src,dest);
+					this.dest=dest;
 				}
 			}
 			catch(Exception e) {
@@ -166,4 +170,20 @@ public class CL_Agent {
 		public void set_sg_dt(long _sg_dt) {
 			this._sg_dt = _sg_dt;
 		}
+
+
+		public void setIte( Iterator<node_data> ite) {
+			this._ite= ite;
+		}
+		public node_data getIte() {
+			if (_ite == null) return null;
+			else if (_ite.hasNext()) return this._ite.next();
+			else return null;
+		}
+	public Iterator<node_data> get_ite() {
+		if (_ite == null) return null;
+		else return this._ite;
 	}
+	}
+
+
