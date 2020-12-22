@@ -10,6 +10,7 @@ public class XLogin extends JFrame implements ActionListener {
     JTextField textLevel;
     JLabel _ID;
     JLabel _Level;
+    JLabel _x;
     JButton _button;
     int id;
     int level;
@@ -22,11 +23,12 @@ public class XLogin extends JFrame implements ActionListener {
         textId.setBounds(75, 50, 150, 25);
         textLevel = new JTextField();
         textLevel.setBounds(75, 90, 150, 25);
-        textId.addActionListener(this);
         this._ID = new JLabel("ID: ");
-        this._ID.setBounds(50, 50, 50, 25);
+        this._ID.setBounds(55, 50, 50, 25);
         this._Level = new JLabel("Level: ");
-        this._Level.setBounds(50, 90, 50, 25);
+        this._Level.setBounds(35, 90, 50, 25);
+        this._x =new JLabel(" ");
+        this._x.setBounds(50, 120, 50, 25);
         this._button = new JButton("Start");
         this._button.setBounds(50, 150, 200, 30);
         this.add(textId);
@@ -34,11 +36,13 @@ public class XLogin extends JFrame implements ActionListener {
         this.add(_button);
         this.add(_ID);
         this.add(_Level);
+        this.add(_x);
         this.setResizable(false);
         this._button.addActionListener(this);
         this.setBounds(300, 300, 300, 300);
         setVisible(true);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String _id = this.textId.getText();

@@ -14,29 +14,54 @@ public class Ex2 implements Runnable {
 
     private static dw_graph_algorithms ga;
     private static directed_weighted_graph g;
-    private static List<node_data> path;
-    private static double[] distance;
+    private List<node_data> path;
+    private double[] distance;
     private static int count=0;
     private static double[][] wayOut;
-    private static final HashMap<Integer, CL_Pokemon> attack= new HashMap<>();
+    private HashMap<Integer, CL_Pokemon> attack= new HashMap<>();
     private XLogin loginPage;
-    private static int _level;
-    private static int _id;
-    
+    private static int level;
+    private static int id;
+    private static boolean loggedIn;
+
+    /**
+     * if the user puts the id and the level at the main section
+     * it will receive the details and start the Thread.
+     * @param a
+     */
     public static void main(String[] a) {
         Thread main = new Thread(new Ex2());
+        if (a.length==0)
+            loggedIn=false;
+        else {
+            String _id = a[0];
+            String _level = a[1];
+            boolean validID = _id.chars().allMatch(Character::isDigit);
+            boolean validLevel = _level.chars().allMatch(Character::isDigit);
+            if (validID && validLevel) {
+                id = Integer.parseInt(_id);
+                level = Integer.parseInt(_level);
+                loggedIn = true;
+            }
+            if (!loggedIn)
+                System.out.println("Invalid value, Please enter only numbers");
+        }
         main.start();
     }
 
+    /**
+     * this method is the main method which open the login page (in terms no details were received)
+     * and start and run the game.
+     */
     @Override
     public void run() {
-        login();
-        game_service game = Game_Server_Ex2.getServer(_level); // you have [0,23] games
-        game.login(_id);
+        if(!loggedIn)
+             login();
+        game_service game = Game_Server_Ex2.getServer(level);
+        game.login(id);
         ga= new DWGraph_Algo();
         game.getGraph();
         init(game);
-
         game.startGame();
         _win.setTitle("Ex2 - OOP:Barak & Liroy ");
         long dt=100;
@@ -45,7 +70,6 @@ public class Ex2 implements Runnable {
                 moveAgents(game);
                 _win.repaint();
                 _ar.setTime(game.timeToEnd() / 1000);
-
                 Thread.sleep(dt);
                 _ar.update_info(game.toString());
             }
@@ -66,9 +90,9 @@ public class Ex2 implements Runnable {
         while (!this.loginPage.connected()) {
             System.out.print("");
         }
-            _level = loginPage.getLevel();
-            _id = loginPage.getId();
-            loginPage.setVisible(false);
+        level = loginPage.getLevel();
+        id = loginPage.getId();
+        loginPage.setVisible(false);
     }
     /**
      *this method init the information of the game
@@ -101,19 +125,28 @@ public class Ex2 implements Runnable {
             for (CL_Pokemon pika : pokemons) Arena.updateEdge(pika, g);
             CL_Pokemon pika;
             for (int k = 0; k < numOfAgents; k++) {
-            for (int i =0; i< pokemons.size(); i++)
-                if(pokemons.size()>2){
-                for (int j = i+1; j < pokemons.size(); j++)
-                        if (pokemons.get(i).get_edge() == pokemons.get(j).get_edge())
-                            pika = pokemons.get(i);
-                    }
-            pika= pokemons.get(k);
+                pika= pokemons.get(k);
                 int pikapik = pika.get_edge().getSrc();
-                if (pokemons.get(k).getType()<0)
-                    pikapik = pika.get_edge().getDest();
-                game.addAgent(pikapik);
-                path = ga.shortestPath(pikapik, pika.get_edge().getDest());
-
+                if(pokemons.size()>2) {
+                    for (int i = 0; i < pokemons.size(); i++) {
+                        for (int j = i + 1; j < pokemons.size(); j++)
+                            if (pokemons.get(i).get_edge() == pokemons.get(j).get_edge())
+                                if (ImFree(pokemons.get(i)) && ImFree(pokemons.get(j))) {
+                                    pika = pokemons.get(i);
+                                    pikapik = pika.get_edge().getSrc();
+                                    if (pokemons.get(k).getType() < 0)
+                                        pikapik = pika.get_edge().getDest();
+                                    path = ga.shortestPath(pikapik, pika.get_edge().getDest());
+                                    game.addAgent(pikapik);
+                                    attack.put(k, pika);
+                                }
+                    }
+                }
+                if( pika == pokemons.get(k)) {
+                    path = ga.shortestPath(pikapik, pika.get_edge().getDest());
+                    game.addAgent(pikapik);
+                    attack.put(k,pika);
+                }
             }
         } catch (JSONException e) {e.printStackTrace();}
     }
@@ -127,22 +160,22 @@ public class Ex2 implements Runnable {
         List<CL_Agent> log = Arena.getAgents(game.move(), g);
         _ar.setAgents(log);
         game.getAgents();
-
-        String fs = game.getPokemons();
-        List<CL_Pokemon> pokemons = Arena.json2Pokemons(fs);
+        String pokes = game.getPokemons();
+        List<CL_Pokemon> pokemons = Arena.json2Pokemons(pokes);
         for (CL_Pokemon pika : pokemons) Arena.updateEdge(pika, g);
         _ar.setPokemons(pokemons);
         while (count < 1) {
             count++;
-            for (CL_Agent agent : log) attack.put(agent.getID(), null);
+            for (CL_Agent agent : log) {
+                attack.put(agent.getID(), null);
+            }
         }
-        CL_Pokemon pika;
         for (CL_Agent ag : log) {
             int id = ag.getID();
             int dest = ag.getNextNode();
             double v = ag.getValue();
 
-            if (ag.getIte() == null || dest==-1) {
+            if (ag.getIte() == null  || attack.get(ag.getID())==null || dest==-1) {
                 path = path(ag, attack(ag, pokemons));
                 Iterator<node_data> i = path.listIterator();
                 i.next();
@@ -150,14 +183,14 @@ public class Ex2 implements Runnable {
             }
             if (!ag.isMoving() && ag.get_ite().hasNext()) {
                 dest = ag.getIte().getKey();
-                if (dest != -1) {
-                    ag.setNextNode(dest);
-                    game.chooseNextEdge(ag.getID(), dest);
-                    System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
-                }
+                ag.setNextNode(dest);
+                game.chooseNextEdge(ag.getID(), dest);
+                System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
             }
-            if (!ag.get_ite().hasNext() || dest==-1)
-                attack.replace(ag.getID(),null);
+            if (!ag.get_ite().hasNext() ) {
+                attack.replace(ag.getID(), null);
+                ag.setNextNode(-1);
+            }
         }
     }
 
@@ -171,8 +204,10 @@ public class Ex2 implements Runnable {
         int src = agent.getSrcNode();
         int dest = pika.get_edge().getDest();
         path = ga.shortestPath(src, pika.get_edge().getSrc());
-        if (pika.get_edge().getSrc() == agent.getSrcNode())
+        if (pika.get_edge().getSrc() == agent.getSrcNode() || pika.get_edge().getDest() == agent.getNextNode()) {
+            attack.replace(agent.getID(), pika);
             path = ga.shortestPath(src, dest);
+        }
         return path;
     }
 
@@ -183,16 +218,12 @@ public class Ex2 implements Runnable {
      * @return
      */
     private CL_Pokemon attack(CL_Agent agent,List<CL_Pokemon> pokemons){
-        distance = nextPika(agent,pokemons);
-        CL_Pokemon pika = null;
-        double curr = 0;
-        if (ImFree(pokemons.get(0))) {
-             pika = pokemons.get(0);
-             curr = distance[0];
-        }
-        for (int i = 1; i < distance.length; i++) {
+        nextPika(agent);
+        CL_Pokemon pika = pokemons.get(0);
+        double curr = 32552523;
+        for (int i = 0; i < distance.length; i++) {
             if (ImFree(pokemons.get(i))) {
-                if(curr > distance[i]) {
+                if(curr >= distance[i]) {
                     curr = distance[i];
                     pika = pokemons.get(i);
                     attack.replace(agent.getID(), pika);
@@ -210,36 +241,47 @@ public class Ex2 implements Runnable {
      * this method check what the shortest path from the agent to each pokemon on the graph
      * and return array of doubles.
      * @param agent
-     * @param pokemons
      * @return
      */
-    private double[] nextPika(CL_Agent agent, List<CL_Pokemon> pokemons){
+    private void nextPika(CL_Agent agent){
+        List<CL_Pokemon> pokemons=_ar.getPokemons();
+        distance =new double[pokemons.size()];
+        int src = agent.getSrcNode();
         if (!ga.isConnected()) {
             wayOut();
-            distance = new double[pokemons.size()];
-            int src = agent.getSrcNode();
             for (int i = 0; i < pokemons.size(); i++) {
                 int dest = pokemons.get(i).get_edge().getSrc();
                 if (wayOut[src][dest] != -1 && wayOut[dest][src] != -1)
                     distance[i] = ga.shortestPathDist(src, dest);
             }
         }
-        distance =new double[pokemons.size()];
-        int src = agent.getSrcNode();
         for (int i = 0; i < pokemons.size(); i++) {
-            int dest = pokemons.get(i).get_edge().getSrc();
-            distance[i]=ga.shortestPathDist(src,dest);
-            if (pokemons.get(i).get_edge().getSrc() == agent.getSrcNode() ||pokemons.get(i).getType() > 0) {
-                dest = pokemons.get(i).get_edge().getDest();
+            CL_Pokemon pika =pokemons.get(i);
+            int dest = pika.get_edge().getSrc();
+            if(ImFree(pika)) {
                 distance[i] = ga.shortestPathDist(src, dest);
             }
-
         }
-        return distance;
+
     }
 
     /**
-     * while the graph isnt connected this method check where are the path is invalid
+     * this method put all the distances between all the nodes of the graph
+     * if the graph isn`t connected the method operates the method noWayOut
+     */
+    private void wayOut(){
+        int NS=ga.getGraph().nodeSize();
+        wayOut=new double[NS][NS];
+        for(int i = 0; i < NS; i++) {
+            for (int j = 0; j < NS; j++) {
+                wayOut[i][j] = ga.shortestPathDist(i, j);
+            }
+        }
+        if(!ga.isConnected()) noWayOut();
+    }
+
+    /**
+     * while the graph isn`t connected this method check where are the path is invalid
      * and do the reverse path to -1 So that there will be no situation that
      * the agent enters to a dead end
      */
@@ -254,22 +296,5 @@ public class Ex2 implements Runnable {
             }
         }
     }
-
-    /**
-     * this method put all the distances between all the nodes of the graph
-     * if the graph isnt connected the method operates the method noWayOut
-     */
-    private void wayOut(){
-        int NS=ga.getGraph().nodeSize();
-        wayOut=new double[NS][NS];
-        for(int i = 0; i < NS; i++) {
-            for (int j = 0; j < NS; j++) {
-                wayOut[i][j] = ga.shortestPathDist(i, j);
-            }
-        }
-        if(!ga.isConnected()) noWayOut();
-    }
-
 }
-
 

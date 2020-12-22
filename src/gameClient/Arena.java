@@ -30,17 +30,12 @@ public class Arena {
 	private static Point3D MAX = new Point3D(0, 100,0);
 	private long _time;
 	private List<Integer> info;
-	private int numberOfAgents;
 
-	public Arena() {;
+	public Arena() {
 		_info = new ArrayList<String>();
 		info = new ArrayList<>();
 	}
-	private Arena(directed_weighted_graph g, List<CL_Agent> r, List<CL_Pokemon> p) {
-		_gg = g;
-		this.setAgents(r);
-		this.setPokemons(p);
-	}
+
 	public void setPokemons(List<CL_Pokemon> f) {
 		this._pokemons = f;
 	}
@@ -96,9 +91,7 @@ public class Arena {
 	public void set_info(List<String> _info) {
 		this._info = _info;
 	}
-//
-//	public List<String> getInfo() {
-//	}
+
 
 	public List<Integer> getInfo(){
 		return this.info;
@@ -144,7 +137,6 @@ public class Arena {
 				c.update(ags.get(i).toString());
 				ans.add(c);
 			}
-			//= getJSONArray("Agents");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -160,7 +152,6 @@ public class Arena {
 				JSONObject pk = pp.getJSONObject("Pokemon");
 				int t = pk.getInt("type");
 				double v = pk.getDouble("value");
-				//double s = 0;//pk.getDouble("speed");
 				String p = pk.getString("pos");
 				CL_Pokemon f = new CL_Pokemon(new Point3D(p), t, v, 0, null);
 				ans.add(f);
@@ -170,7 +161,6 @@ public class Arena {
 		return ans;
 	}
 	public static void updateEdge(CL_Pokemon fr, directed_weighted_graph g) {
-		//	oop_edge_data ans = null;
 		for (node_data v : g.getV()) {
 			for (edge_data e : g.getE(v.getKey())) {
 				boolean f = isOnEdge(fr.getLocation(), e, fr.getType(), g);

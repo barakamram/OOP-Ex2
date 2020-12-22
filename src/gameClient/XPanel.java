@@ -23,9 +23,8 @@ public class XPanel extends JPanel {
     private JLabel _info;
     private Font _font;
     private BufferedImage _backGround;
-    private BufferedImage _pikachu;
-    private BufferedImage _lightning;
-
+    private BufferedImage _pokeBall;
+    private BufferedImage _pika;
 
     XPanel(Arena arena) {
         super();
@@ -37,11 +36,10 @@ public class XPanel extends JPanel {
         this._info.setForeground(new Color(200, 10, 255));
         this._info.setOpaque(true);
         this.add(this._info);
-
         try {
             this._backGround = ImageIO.read(new File("data/back.jpg"));
-            this._pikachu = ImageIO.read(new File("data/pika.png"));
-            this._lightning = ImageIO.read(new File("data/lightning.png"));
+            this._pokeBall = ImageIO.read(new File("data/pokeBall.png"));
+            this._pika = ImageIO.read(new File("data/pika.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,7 +48,6 @@ public class XPanel extends JPanel {
     public void update(Arena ar) {
         this._ar = ar;
         updateFrame();
-
     }
 
     private void updateFrame() {
@@ -73,7 +70,6 @@ public class XPanel extends JPanel {
     }
 
     private void drawBackGround(Graphics g){
-
         g.drawImage(_backGround,0,0,getWidth(),getHeight(),null);
     }
     private void drawInfo(Graphics g) {
@@ -98,16 +94,12 @@ public class XPanel extends JPanel {
     }
 
     private void drawPokemons(Graphics g) {
-
-
         for (CL_Pokemon pika : _ar.getPokemons()) {
-
             Point3D p = pika.getLocation();
             if (p != null) {
                 geo_location fp = this._w2f.world2frame(p);
-                g.drawImage(this._lightning, (int) fp.x(), (int) fp.y(), 20, 20, null);
+                g.drawImage(this._pika, (int) fp.x(), (int) fp.y(), 25, 25, null);
             }
-
         }
     }
 
@@ -119,9 +111,8 @@ public class XPanel extends JPanel {
             geo_location c = rs.get(i).getLocation();
             i++;
             if(c!=null) {
-
                 geo_location fp = this._w2f.world2frame(c);
-                g.drawImage(this._pikachu, (int) fp.x(), (int) fp.y(), 30, 30, null);
+                g.drawImage(this._pokeBall, (int) fp.x(), (int) fp.y(), 25, 25, null);
             }
         }
     }

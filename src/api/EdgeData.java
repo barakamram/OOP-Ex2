@@ -71,5 +71,9 @@ public class EdgeData implements edge_data {
     public void setTag(int t) {
         this.tag=t;
     }
+
+    public String toString(){
+        return "s: "+src+" d: "+dest+" w: "+weight;
+    }
 }
 
